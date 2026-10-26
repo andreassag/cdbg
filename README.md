@@ -1,4 +1,8 @@
-# cdbg: Colored Compacted De Bruijn Graph with Succinct Filters (`bifrost`-lite)
+> [!IMPORTANT]
+> **Archival Notice**
+> This repository is archived and is no longer actively maintained.
+
+# cdbg: Colored Compacted De Bruijn Graph with Succinct Filters
 
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
