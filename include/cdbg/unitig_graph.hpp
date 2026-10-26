@@ -167,6 +167,30 @@ public:
             graph.unitigs.push_back(std::move(u));
         }
 
+        // Construct out_edges by matching (k-1)-mer overlaps
+        if (graph.k > 1) {
+            std::unordered_map<std::string, std::vector<uint32_t>> prefix_map;
+            prefix_map.reserve(graph.unitigs.size());
+            for (const auto& u : graph.unitigs) {
+                if (u.seq.size() >= graph.k) {
+                    std::string pfx = u.seq.substr(0, graph.k - 1);
+                    prefix_map[pfx].push_back(u.id);
+                }
+            }
+
+            for (auto& u : graph.unitigs) {
+                if (u.seq.size() >= graph.k) {
+                    std::string sfx = u.seq.substr(u.seq.size() - (graph.k - 1));
+                    auto it = prefix_map.find(sfx);
+                    if (it != prefix_map.end()) {
+                        for (uint32_t tgt : it->second) {
+                            u.out_edges.push_back(tgt);
+                        }
+                    }
+                }
+            }
+        }
+
         // Populate succinct filters with canonical k-mer hashes
         for (const auto& u : graph.unitigs) {
             for (size_t i = 0; i + k_val <= u.seq.size(); ++i) {

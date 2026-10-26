@@ -164,6 +164,45 @@ void test_serialization() {
     std::cout << "[PASS] test_serialization\n";
 }
 
+void test_unitig_graph_edges_and_gfa() {
+    uint32_t k = 5;
+    // Two branches merging: branch 1: AAAACT, branch 2: TTTTCT, both flow into CTGGGG
+    // With k=5, (k-1) = 4.
+    // branch 1 ends with AACT.
+    // branch 2 ends with TTCT.
+    // shared suffix starts with AACT or TTCT?
+    // Let's create an explicit branching structure:
+    // seq1: ACGTACGT (unitig 1)
+    // seq2: TACGTGGG (overlaps ACGT by 4 bp: TACGT)
+    std::string s1 = "ACGTACG"; // 7 bp: kmers: ACGTA, CGTAC, GTACG
+    std::string s2 = "GTACGGG"; // 7 bp: starts with GTACG -> 4-mer overlap with s1 suffix "TACG"
+    auto graph = cdbg::UnitigGraph::build({{"S1", s1}, {"S2", s2}}, k);
+    assert(!graph.unitigs.empty());
+
+    bool has_edge = false;
+    for (const auto& u : graph.unitigs) {
+        if (!u.out_edges.empty()) {
+            has_edge = true;
+            break;
+        }
+    }
+    assert(has_edge);
+
+    std::string gfa_path = "/tmp/test_edges.gfa";
+    cdbg::export_gfa(graph, gfa_path);
+    std::ifstream gfa_in(gfa_path);
+    std::string line;
+    bool found_link = false;
+    while (std::getline(gfa_in, line)) {
+        if (line.starts_with("L\t")) {
+            found_link = true;
+            break;
+        }
+    }
+    assert(found_link);
+    std::cout << "[PASS] test_unitig_graph_edges_and_gfa\n";
+}
+
 int main() {
     std::cout << "Running cdbg unit tests...\n";
     test_bit_vector_rank_select();
@@ -172,6 +211,7 @@ int main() {
     test_unitig_compaction();
     test_color_matrix_multi_sample();
     test_serialization();
+    test_unitig_graph_edges_and_gfa();
     std::cout << "All cdbg unit tests passed successfully!\n";
     return 0;
 }
