@@ -1,6 +1,5 @@
-> [!IMPORTANT]
-> **Archival Notice**
-> This repository is archived and is no longer actively maintained.
+> [!NOTE]
+> **Archive Notice**: This project is an educational and reference implementation of colored compacted de Bruijn graphs with succinct filters in C++20. It is finished and archived; no active maintenance or feature development is planned.
 
 # cdbg: Colored Compacted De Bruijn Graph with Succinct Filters
 
